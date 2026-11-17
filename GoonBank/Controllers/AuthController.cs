@@ -92,6 +92,27 @@ public class AuthController : ControllerBase
         return Ok(AccountResponse.FromAccount(account));
     }
 
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        var accountId = User.GetAccountId();
+        if (string.IsNullOrEmpty(accountId))
+        {
+            return Unauthorized();
+        }
+
+        await _auditService.LogAsync(
+            AuditEntityType.Session,
+            accountId,
+            AuditAction.Delete,
+            ActorType.Customer,
+            customerId: accountId,
+            details: new { Action = "UserLogout" });
+
+        return Ok(new { message = "Logged out successfully." });
+    }
+
     private static string HashPassword(string password)
     {
         if (password.Length == 64 && password.All(c => "0123456789abcdefABCDEF".Contains(c)))

@@ -47,7 +47,7 @@ public class AuditService : IAuditService
             ActorType = actorType,
             ActorIdentityId = actorIdentityId,
             CustomerId = customerId,
-            OccurredAt = DateTimeOffset.UtcNow,
+            OccurredAt = DateTime.UtcNow,
             IpAddress = ipAddress,
             CorrelationId = correlationId,
             DetailsJson = details != null ? JsonSerializer.Serialize(details) : null

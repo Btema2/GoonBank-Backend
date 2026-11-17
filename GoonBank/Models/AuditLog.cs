@@ -15,7 +15,7 @@ public class AuditLog
     public required string EntityId { get; init; }
     public AuditAction Action { get; init; }
 
-    public DateTimeOffset OccurredAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTime OccurredAt { get; init; } = DateTime.UtcNow;
     public string? CorrelationId { get; init; }
     public string? IpAddress { get; init; }
     public string? DetailsJson { get; init; }

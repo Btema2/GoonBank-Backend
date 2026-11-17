@@ -1,0 +1,727 @@
+{
+	"info": {
+		"_postman_id": "b968f3a1-7788-4f24-9b22-82348570abcd",
+		"name": "GoonBank API",
+		"description": "Collection of requests for testing GoonBank backend in Postman.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accountId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "targetAccountId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transactionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "blihCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "paymentId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication & Accounts",
+			"item": [
+				{
+					"name": "1.1 Register New Account (Jan)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Jan\",\n  \"lastName\": \"Kowalski\",\n  \"email\": \"jan.kowalski@example.com\",\n  \"passwordHash\": \"Secret123!\",\n  \"dateOfBirth\": \"1992-05-15\",\n  \"currency\": \"PLN\",\n  \"accountType\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Account"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.accountId) {",
+									"    pm.collectionVariables.set('accountId', res.accountId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1.2 Register Second Account (Anna - for transfer tests)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Anna\",\n  \"lastName\": \"Nowak\",\n  \"email\": \"anna.nowak@example.com\",\n  \"passwordHash\": \"Secret123!\",\n  \"dateOfBirth\": \"1995-08-20\",\n  \"currency\": \"PLN\",\n  \"accountType\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Account"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.accountId) {",
+									"    pm.collectionVariables.set('targetAccountId', res.accountId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1.3 Login (Jan)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jan.kowalski@example.com\",\n  \"password\": \"Secret123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.token) {",
+									"    pm.collectionVariables.set('authToken', res.token);",
+									"}",
+									"if (res.accountId) {",
+									"    pm.collectionVariables.set('accountId', res.accountId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1.4 Get Profile (Me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.5 Get Account By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Account/{{accountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Account",
+								"{{accountId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "1.6 Get Account Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Account/{{accountId}}/transactions?page=1&pageSize=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Account",
+								"{{accountId}}",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "50"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "1.7 Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logs out the authenticated user and records UserLogout session audit."
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Transactions",
+			"item": [
+				{
+					"name": "2.1 Create Deposit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sourceAccountId\": \"{{accountId}}\",\n  \"amount\": 1000.00,\n  \"transactionType\": 2,\n  \"description\": \"Initial ATM Cash Deposit\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Transaction",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Transaction"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.transactionId) {",
+									"    pm.collectionVariables.set('transactionId', res.transactionId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2.2 Execute Deposit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Transaction/{{transactionId}}/execute",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Transaction",
+								"{{transactionId}}",
+								"execute"
+							]
+						}
+					}
+				},
+				{
+					"name": "2.3 Create Transfer to Anna",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sourceAccountId\": \"{{accountId}}\",\n  \"targetAccountId\": \"{{targetAccountId}}\",\n  \"amount\": 250.00,\n  \"transactionType\": 0,\n  \"description\": \"Rent payment\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Transaction",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Transaction"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.transactionId) {",
+									"    pm.collectionVariables.set('transactionId', res.transactionId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2.4 Execute Transfer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Transaction/{{transactionId}}/execute",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Transaction",
+								"{{transactionId}}",
+								"execute"
+							]
+						}
+					}
+				},
+				{
+					"name": "2.5 Get Transaction Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Transaction/{{transactionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Transaction",
+								"{{transactionId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. BLIH Payments",
+			"item": [
+				{
+					"name": "3.1 Register BLIH Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"{{accountId}}\",\n  \"phoneHash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/BlihProfile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"BlihProfile"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.2 Generate BLIH Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"{{accountId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Blih/code",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Blih",
+								"code"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.code) {",
+									"    pm.collectionVariables.set('blihCode', res.code);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "3.3 Merchant Initiates Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"blihCode\": \"{{blihCode}}\",\n  \"merchantId\": \"STORE_ZABKA_01\",\n  \"amount\": 45.50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Blih/payment/initiate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Blih",
+								"payment",
+								"initiate"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const res = pm.response.json();",
+									"if (res.paymentId) {",
+									"    pm.collectionVariables.set('paymentId', res.paymentId);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "3.4 Customer Checks Pending BLIH Payment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Blih/payment/pending/{{accountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Blih",
+								"payment",
+								"pending",
+								"{{accountId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "3.5 Customer Confirms BLIH Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Blih/payment/{{paymentId}}/confirm",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Blih",
+								"payment",
+								"{{paymentId}}",
+								"confirm"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Testing & Cleanup",
+			"item": [
+				{
+					"name": "4.1 Reset Database (Wipe All Data)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/testing/reset",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"testing",
+								"reset"
+							]
+						},
+						"description": "Wipes all accounts, transactions, blih records, and audit logs. Only works in Development mode."
+					}
+				},
+				{
+					"name": "4.2 Delete Current Account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/testing/accounts/{{accountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"testing",
+								"accounts",
+								"{{accountId}}"
+							]
+						},
+						"description": "Deletes the currently authenticated/saved account and its associated transactions and blih records. Only works in Development mode."
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Audit Logs",
+			"item": [
+				{
+					"name": "5.1 Get My Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit?page=1&pageSize=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"audit"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Returns audit logs related to the authenticated account."
+					}
+				},
+				{
+					"name": "5.2 Get All Audit Logs (Dev)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit/all?page=1&pageSize=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"audit",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Returns all audit logs in the system without authentication. Available only in Development mode."
+					}
+				}
+			]
+		}
+	]
+}
