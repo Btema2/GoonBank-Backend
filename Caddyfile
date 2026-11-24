@@ -1,19 +1,12 @@
 {
-    # Disable port 80 HTTP-to-HTTPS redirect since port 80 is taken on your server
+    # Disable port 80 HTTP-to-HTTPS redirect since port 80 is taken
     auto_https disable_redirects
 }
 
-# Replace 'localhost' with your domain (e.g., api.yourdomain.com) or pass DOMAIN=yourdomain in .env
-{$DOMAIN:localhost} {
-    tls {
-        # Perform certificate challenge strictly on port 443 (TLS-ALPN-01)
-        issuer acme {
-            disable_http_challenge
-        }
-        issuer zerossl {
-            disable_http_challenge
-        }
-    }
+# Listen on port 443 for any incoming host/IP (e.g. https://localhost or https://<school-ip>)
+:443 {
+    # Generate an internal self-signed TLS certificate (no domain or Let's Encrypt required)
+    tls internal
 
     reverse_proxy goonbank-api:8000
 }
