@@ -1,0 +1,16 @@
+services:
+  goonbank-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goonbank-backend
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/jewbank.db
+      - JwtSettings__Secret=GoonBankSuperSecretSecureKeyForJwtTokens2026!#*$
+    volumes:
+      - ./data:/app/data

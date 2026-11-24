@@ -1,0 +1,8 @@
+**/.git
+**/.idea
+**/bin
+**/obj
+**/TestResults
+**/*.DotSettings.user
+data/
+jewbank.db*
