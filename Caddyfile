@@ -1,0 +1,5 @@
+# Replace 'localhost' with your actual domain (e.g., api.yourdomain.com) for automatic public Let's Encrypt SSL certificates.
+# If left as 'localhost', Caddy generates an internal self-signed SSL certificate for local HTTPS testing.
+{$DOMAIN:localhost} {
+    reverse_proxy goonbank-api:8000
+}

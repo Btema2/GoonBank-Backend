@@ -5,12 +5,30 @@ services:
       dockerfile: Dockerfile
     container_name: goonbank-backend
     restart: unless-stopped
-    ports:
-      - "80:8090"
+    expose:
+      - "8000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTP_PORTS=8000
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/jewbank.db
       - JwtSettings__Secret=GoonBankSuperSecretSecureKeyForJwtTokens2026!#*$
     volumes:
       - ./data:/app/data
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: goonbank-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - goonbank-api
+
+volumes:
+  caddy_data:
+  caddy_config:

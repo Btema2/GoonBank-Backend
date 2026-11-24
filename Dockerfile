@@ -18,7 +18,7 @@ RUN mkdir -p /app/data
 
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_HTTP_PORTS=8080
-EXPOSE 8080
+ENV ASPNETCORE_HTTP_PORTS=8000
+EXPOSE 8000
 
 ENTRYPOINT ["dotnet", "GoonBank.dll"]
